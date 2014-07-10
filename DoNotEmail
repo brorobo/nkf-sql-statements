@@ -1,0 +1,33 @@
+/*find people in iMIS who are either unsubscribed or have asked to not be emailed*/
+
+select n.ID
+, n.LAST_NAME
+, n.FIRST_NAME
+, n.STATUS
+, c.NO_MAIL
+,a.ACTIVITY_TYPE
+from Name n
+inner join Communications c on n.ID = c.ID
+inner join Activity a on n.ID = a.ID
+where c.NO_MAIL <> 0
+or a.ACTIVITY_TYPE = 'iunsub'
+
+select n.ID
+, n.LAST_NAME
+, n.FIRST_NAME
+, n.STATUS
+, a.ACTIVITY_TYPE
+, a.AMOUNT
+, c.NO_MAIL
+from Name n
+inner join Communications c on n.ID = c.ID
+inner join Activity a on a.ID = n.ID
+where a.AMOUNT <> 0
+and (c.NO_MAIL <> 0 or a.ACTIVITY_TYPE = 'iunsub')
+group by n.ID
+, n.LAST_NAME
+, n.FIRST_NAME
+, n.STATUS
+, a.ACTIVITY_TYPE
+, a.AMOUNT
+, c.NO_MAIL
