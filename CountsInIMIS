@@ -1,0 +1,197 @@
+NOT MARKED FOR DELETION OR DECEASED
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1')
+	915552
+
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1')
+	and n.MEMBER_TYPE not in ('fam','org')
+	872647 (872654 half hour later)
+
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1')
+	and n.MEMBER_TYPE = 'org'
+	39482
+
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1')
+	and n.MEMBER_TYPE = 'fam'
+	3423
+
+...AND NO FIRST_NAME
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1')
+	and n.FIRST_NAME = ''
+	44428
+
+...AND NO LAST_NAME
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1')
+	and n.LAST_NAME = ''
+	44360
+
+...AND NO FIRST_NAME OR LAST_NAME
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1')
+	and n.FIRST_NAME = ''
+	and n.LAST_NAME = ''
+	43779
+
+...AND NOT 'FAM' OR 'ORG'
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1')
+	and n.FIRST_NAME = ''
+	and n.LAST_NAME = ''
+	and n.MEMBER_TYPE not in ('fam','org')
+	1436
+
+...WITH COMPANY
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1')
+	and n.FIRST_NAME = ''
+	and n.LAST_NAME = ''
+	and n.MEMBER_TYPE not in ('fam','org')
+	and n.COMPANY <> ''
+	1429
+(7 without that probably can be deleted immediately)
+
+
+
+NOT MARKED FOR DELETION, DECEASED, OR NOT BAD ADDRESS
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1','SA'/*bad address*/)
+	909154
+
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1','SA'/*bad address*/)
+	and n.MEMBER_TYPE not in ('fam','org')
+	866502
+
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1','SA'/*bad address*/)
+	and n.MEMBER_TYPE = 'org'
+	39233
+
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1','SA'/*bad address*/)
+	and n.MEMBER_TYPE = 'fam'
+	3419
+
+...AND NO FIRST_NAME
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1','SA'/*bad address*/)
+	and n.FIRST_NAME = ''
+	44150
+
+...AND NO LAST_NAME
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1','SA'/*bad address*/)
+	and n.LAST_NAME = ''
+	44067
+
+...AND NO FIRST_NAME OR LAST_NAME
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1','SA'/*bad address*/)
+	and n.FIRST_NAME = ''
+	and n.LAST_NAME = ''
+	43506
+
+...AND NOT 'FAM' OR 'ORG'
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1','SA'/*bad address*/)
+	and n.FIRST_NAME = ''
+	and n.LAST_NAME = ''
+	and n.MEMBER_TYPE not in ('fam','org')
+	1413
+
+...WITH COMPANY
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1','SA'/*bad address*/)
+	and n.FIRST_NAME = ''
+	and n.LAST_NAME = ''
+	and n.MEMBER_TYPE not in ('fam','org')
+	and n.COMPANY <> ''
+	1406
+(6 without that probably can be deleted immediately)
+
+
+
+
+
+
+
+BAD EMAIL IN NAME TABLE:
+	SELECT COUNT(*)
+	FROM Name n
+	WHERE n.EMAIL <> ''
+	and n.email NOT LIKE '%_@__%.__%'
+	500
+	and n.STATUS not in ('D','SD'/*Deceased*/,'C1','SA'/*bad address*/)
+	474
+
+	SELECT COUNT(*)
+	FROM Name n
+	left join Communications c on c.ID = n.ID
+	left join Activity a on a.ID = n.ID
+	WHERE n.EMAIL <> ''
+	and n.email NOT LIKE '%_@__%.__%'
+	AND c.NO_MAIL <> 0
+	or n.EMAIL <> ''
+	and n.email NOT LIKE '%_@__%.__%'
+	and a.ACTIVITY_TYPE = 'iunsub'
+	87
+	and n.STATUS not in ('D','SD'/*Deceased*/,'C1','SA'/*bad address*/)
+	72
+
+BAD EMAIL IN NAME_ADDRESS TABLE:
+	SELECT COUNT(*)
+	FROM Name na
+	WHERE na.EMAIL <> ''
+	and na.email NOT LIKE '%_@__%.__%'
+	519
+	and na.STATUS not in ('D','SD'/*Deceased*/,'C1','SA'/*bad address*/)
+	518
+
+	SELECT COUNT(*)
+	FROM Name_Address na
+	left join Communications c on c.ID = na.ID
+	left join Activity a on a.ID = na.ID
+	WHERE na.EMAIL <> ''
+	and na.email NOT LIKE '%_@__%.__%'
+	AND c.NO_MAIL <> 0
+	or na.EMAIL <> ''
+	and na.email NOT LIKE '%_@__%.__%'
+	and a.ACTIVITY_TYPE = 'iunsub'
+	88
+	and n.STATUS not in ('D','SD'/*Deceased*/,'C1','SA'/*bad address*/)
+	73
+
+RECORDS WITH NO COUNTRY AND NO ZIP
+	select COUNT(*)
+	from Name n
+	where n.STATUS not in ('D','SD'/*Deceased*/,'C1')
+	and n.MEMBER_TYPE not in ('fam','org')
+	and n.COUNTRY = '' (presumably USA)
+	and n.ZIP = ''
+	5603
+
+/* events?
+professionals?
