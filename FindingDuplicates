@@ -1,0 +1,24 @@
+/*
+select DUP_MATCH_KEY,count(DUP_MATCH_KEY) from Name 
+group by DUP_MATCH_KEY having count(DUP_MATCH_KEY) > 1
+*/
+select DUP_MATCH_KEY
+, ID
+, FIRST_NAME
+, LAST_NAME
+, ZIP
+from Name
+where DUP_MATCH_KEY <> ''
+and DUP_MATCH_KEY in
+( select DUP_MATCH_KEY
+from Name
+group by DUP_MATCH_KEY
+having COUNT(DUP_MATCH_KEY) > 1)
+order by DUP_MATCH_KEY
+
+/*
+/* no dupe match key - all these records have no last name*/
+select *
+from name 
+where DUP_MATCH_KEY = ''
+*/
