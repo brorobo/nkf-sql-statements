@@ -1,0 +1,79 @@
+select *
+from Name
+where MEMBER_TYPE in ('NKF','org','fam')
+and STATUS = 'A'
+and FIRST_NAME <> ''
+
+
+select *
+from Name
+where MEMBER_TYPE in ('NKF','org','fam')
+and STATUS = 'A'
+and LAST_NAME <> ''
+
+
+select *
+from Name n
+inner join Name_Address na on na.ADDRESS_NUM = n.MAIL_ADDRESS_NUM
+where n.MEMBER_TYPE in ('NKF','org','fam')
+and n.COUNTRY <> ''
+
+
+select *
+from Name n
+inner join Name_Address na on na.ADDRESS_NUM = n.MAIL_ADDRESS_NUM
+where n.MEMBER_TYPE in ('NKF','org','fam')
+and n.STATUS = 'A'
+and (na.ADDRESS_1 = ''
+or na.CITY = ''
+or na.STATE_PROVINCE = ''
+or na.ZIP = '')
+
+
+select *
+from Name n
+inner join Name_Address na on na.ADDRESS_NUM = n.MAIL_ADDRESS_NUM
+where n.MEMBER_TYPE in ('NKF','org','fam')
+and n.STATUS = 'A'
+and na.ADDRESS_1 = ''
+
+
+select *
+from Name n
+inner join Name_Address na on na.ADDRESS_NUM = n.MAIL_ADDRESS_NUM
+where n.MEMBER_TYPE in ('NKF','org','fam')
+and n.STATUS = 'A'
+and na.CITY = ''
+
+
+select *
+from Name n
+inner join Name_Address na on na.ADDRESS_NUM = n.MAIL_ADDRESS_NUM
+where n.MEMBER_TYPE in ('NKF','org','fam')
+and n.STATUS = 'A'
+and na.STATE_PROVINCE = ''
+
+
+select *
+from Name n
+inner join Name_Address na on na.ADDRESS_NUM = n.MAIL_ADDRESS_NUM
+where n.MEMBER_TYPE in ('NKF','org','fam')
+and n.STATUS = 'A'
+and na.ZIP = ''
+
+
+select *
+from Name n
+inner join Name_Address na on na.ADDRESS_NUM = n.MAIL_ADDRESS_NUM
+where n.MEMBER_TYPE in ('NKF','org','fam')
+and n.STATUS = 'A'
+and na.ADDRESS_1 = ''
+and na.CITY = ''
+and na.STATE_PROVINCE = ''
+and na.ZIP = ''
+
+
+select member_type, count(MEMBER_TYPE)
+from Name
+where MEMBER_TYPE in ('NKF','org','fam')
+group by MEMBER_TYPE
