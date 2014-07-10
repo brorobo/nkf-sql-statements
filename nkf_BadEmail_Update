@@ -1,0 +1,81 @@
+/*
+Stored Procedure nkf_BadEmail_update is scheduled, but fails each time:
+Msg 1934, Level 16, State 1, Procedure nkf_BadEmail_update, Line 4
+DELETE failed because the following SET options have incorrect settings: 'ANSI_NULLS, QUOTED_IDENTIFIER'. Verify that SET options are correct for use with indexed views and/or indexes on computed columns and/or filtered indexes and/or query notifications and/or XML data type methods and/or spatial index operations.
+
+Checked Stackoverflow for the error, and noticed that the code at the beginning of the stored procedure is different than for most others.
+
+nkf_BadEmail_update:
+USE [prod_imis]
+GO
+/****** Object:  StoredProcedure [dbo].[nkf_BadEmail_update]    Script Date: 05/21/2014 11:55:51 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER OFF
+GO
+ALTER PROCEDURE [dbo].[nkf_BadEmail_update] AS
+set nocount on
+
+
+Most others have:
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+I tried fixing them in NKFBETA, but it won't let me save it, then I created a New Stored Procedure and made the changes and tried to save it, but it saved it to my local projects, not as a New Stored Procedure. I tried running this new stored procedure and got a "Command(s) completed successfully." response, but I tried to look for evidence of any changes made by searching for 'NKF_BADEMAIL_UPDATE' in 'Name_Log.User_ID', but the latest evidence of that was '2012-10-10 02:50:02.260', so I don't believe it updated anything.
+
+*/
+
+USE [test_imis]
+GO
+/****** Object:  StoredProcedure [dbo].[nkf_BadEmail_update]    Script Date: 05/21/2014 13:08:09 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[nkf_BadEmail_update] AS
+set nocount on
+-- clean the null ID first
+delete from activity
+where id = '' or id is null
+-- log the updates
+insert into name_log(Date_Time,Log_Type,Sub_Type,User_ID,ID,Log_Text)
+select getdate(),'CHANGE','CHANGE','NKF_BADEMAIL_UPDATE',N.ID,'N.EMAIL: '+N.EMAIL+' ->'
+from name n,(select id,case when charindex('|',description) > 0 then
+substring(description,1,(charindex('|',description) -1)) else description end as Email,max(transaction_date) as t_date
+from activity
+where activity_type = 'ibademail'
+group by id, description) AS a
+where a.id=n.id
+and n.status='a'
+and n.email<>''
+and n.email=a.email
+--
+-- update bad emails to blank in name table
+update name
+set email=''
+from name n,(select id,case when charindex('|',description) > 0 then
+substring(description,1,(charindex('|',description) -1)) else description end as Email,max(transaction_date) as t_date
+from activity
+where activity_type = 'ibademail'
+group by id, description) AS a
+where a.id=n.id
+and n.status='a'
+and n.email<>''
+and n.email=a.email
+--
+-- update bad emails to blank in name_address
+-- 
+update name_address
+set email=''
+from name_address na,(select id,case when charindex('|',description) > 0 then
+substring(description,1,(charindex('|',description) -1)) else description end as Email,max(transaction_date) as t_date
+from activity
+where activity_type = 'ibademail'
+group by id, description) AS a,name n
+where a.id=na.id
+and n.id = na.id
+and na.email<>''
+and n.status='a'
+and na.email=a.email
