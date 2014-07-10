@@ -1,0 +1,94 @@
+/* THIS SET OF QUERIES SETS RECORDS FROM THE NCOA AS 'SA' 
+THE LIST OF IDs FROM NCOA SHOULD BE ENTERED INTO THE _BadAddressUpdate TABLE PRIOR TO RUNNING */
+/* TEST THE DESTRUCTIVE QUERIES BELOW: */
+/* query to check out the Name table:*/
+select n.ID, n.STATUS, n.Last_updated, n.UPDATED_BY
+from Name n
+inner join _BadAddressUpdate as SA ON SA.Customer_ID = n.ID
+where 1 = 1 /*this possibly could be added to the imported Excel file from the original, just
+in case the value changes on a single report, which it did not for the first one.*/
+/* this works, but it's probably not good sql technique:
+where ID in (
+	select SA.Customer_ID
+	from _BadAddressUpdate as SA
+)
+and n.LAST_UPDATED < '10/12/13'
+*/
+order by n.updated_by desc
+
+/* query to check out the Name_Log table:
+select nl.date_time, nl.log_type, nl.sub_type, nl.USER_ID, nl.ID, nl.LOG_TEXT
+from Name_Log nl
+inner join _BadAddressUpdate as SA ON SA.Customer_ID = nl.ID
+where nl.LOG_TEXT like '%A -> SA' /*this possibly could be added to the imported Excel file from
+the original, just in case the value changes on a single report, which it did not for the first one.*/
+*/
+*/
+
+/*
+/* THE DESTRUCTIVE QUERY: */
+update n
+set n.STATUS = 'SA',
+	n.Last_updated = getdate(),
+	n.UPDATED_BY = 'SQL_SCRIPT' /*or use one that is knowingly for this 'bot' update */
+/* drop in imis id's here */
+From Name n
+inner join _BadAddressUpdate as SA ON rtrim(ltrim(SA.Customer_ID)) = n.ID
+where n.LAST_UPDATED < '1/03/14' 
+/*this possibly could be added to the imported Excel file from the original, just in case the value changes on a single report, which it did not for the first one.*/
+/* this works, but it's probably not good sql technique:
+where ID in (
+	select SA.Customer_ID
+	from _BadAddressUpdate as SA
+)
+and n.LAST_UPDATED < '1/03/14'
+*/
+*/
+
+/*
+/* UPDATE CHANGE LOG USING ID FROM OTHER TABLE */
+
+INSERT INTO Name_Log (
+	date_time, log_type, sub_type, USER_ID, ID, LOG_TEXT )
+SELECT getdate() AS Expr1, 'CHANGE' AS Expr2, 'CHANGE' AS Expr3, 'SQL_SCRIPT' AS Expr4, rtrim(ltrim(_BadAddressUpdate.customer_id)), 'Name.STATUS: A -> SA' AS Expr5
+FROM _BadAddressUpdate
+*/
+
+
+/******* POST INSERT TESTING/FIXING QUERIES ***************/
+
+/*
+/* FIND AFFECTED RECORDS IN CHANGE LOG */
+SELECT     DATE_TIME, LOG_TYPE, SUB_TYPE, USER_ID, ID, LOG_TEXT, TIME_STAMP
+FROM         Name_Log
+WHERE     (USER_ID = 'SQL_SCRIPT')
+and date_time = '2013-12-19 12:12:19.963'--THIS GETS UPDATED
+order by ID desc
+*/
+/**/
+
+/* BE CAREFUL WITH THIS ONE 
+delete
+from Name_Log
+where (USER_ID = 'SQL_SCRIPT')
+and DATE_TIME = '2014-03-20 22:17:24.290'--THIS GETS UPDATED
+and ID in ('979217','303049','1165594','1165179','1164929','1164826','1164688','1147005','1146732','1145943','1145364','1144924','1144643','1144302','1144199','1144019','1119483','1119473','1119248','1119052','1118290','1118202','1118078','1117580','1116639','1116527','1116374','1116354','1116341','1116019','1115991','1115940','1115790','1115342','1107351','1105963','1105686','1096841','1096804','1095330','1095069','1094946','1094660','1093712','1093573','1093526','1091295','1090793','1090330','1090017','1089910','1088695','1080414','1080378','1069566','1059595','1055354','1034672','1028520')--THIS GETS UPDATED
+*/
+/*
+/* JUST TO VERIFY THE NUMBERS AT THE END OF THE DAY */
+select COUNT(ID)
+from Name_Log
+where (USER_ID = 'SQL_SCRIPT')
+and date_time = '2013-12-19 11:59:29.103'--THIS GETS UPDATED
+*/
+
+/* CHECK TO SEE IF ANYONE WAS UPDATED THAT SHOULDN'T HAVE BEEN 
+SELECT   distinct nl.ID, nl.DATE_TIME, nl.LOG_TYPE, nl.SUB_TYPE, nl.USER_ID, nl.LOG_TEXT, n.STATUS
+FROM         Name_Log nl
+INNER join Name n on n.ID = nl.ID
+WHERE     (nl.USER_ID = 'SQL_SCRIPT')
+and n.STATUS = 'A'
+and DATE_TIME = '2014-03-20 22:17:24.290'--THIS GETS UPDATED
+order by nl.ID desc
+*/
+*/
