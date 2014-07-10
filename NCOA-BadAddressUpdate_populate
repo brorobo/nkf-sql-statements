@@ -1,0 +1,27 @@
+/*WILL NEED TO CREATE A SEPARATE INSERT STATEMENT FOR EACH ID OBTAINED FROM NCOA */
+
+/*
+create table _BadAddressUpdate
+(
+Date_recorded datetime,
+Customer_ID varchar(255)
+)
+*/
+
+insert into _BadAddressUpdate
+(
+Date_recorded,
+Customer_ID)
+
+values (
+getdate(),
+'1165406')
+
+insert into _BadAddressUpdate
+(
+Date_recorded,
+Customer_ID)
+
+values (
+getdate(),
+'1165054')
