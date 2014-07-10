@@ -1,0 +1,82 @@
+/*
+	/*FIND ALL RECORDS IN NAME WITHOUT A CHAPTER: */
+	select chapter, ZIP
+	from Name
+	where Zip <> ''
+	and COUNTRY = ''
+	and CHAPTER = ''
+/* may need to add more delimiters to narrow down fields for finding records where zip is not correctly entered:
+	and LEN(ZIP) < 5 
+*/
+	order by ZIP
+/*=15678 (2/24/14)*/
+*/
+
+/*
+/* trying to get only the true zip codes in the name table
+Msg 245, Level 16, State 1, Line 17
+Conversion failed when converting the varchar value 'K0C 1' to data type int.
+Msg 8114, Level 16, State 5, Line 17
+Error converting data type varchar to numeric.
+*/
+select
+cast(left(n.zip,5) as decimal)
+from name n
+where n.zip is not null
+and left(n.zip,5) * 1 = left(n.zip,5)
+and COUNTRY = ''
+*/
+
+/*
+/* trying to get only the true zip codes in the name table*/
+select n.Zip, N.COUNTRY
+from Name n
+where isnumeric(left(n.zip,5) ) = 1
+and n.zip is not null
+and left(n.zip,5) * 1 = left(n.zip,5)
+and COUNTRY = ''
+and ID <> '732745'
+*/
+
+
+	/* FIND THE NUMBER OF RECORDS TO BE AFFECTED: */
+	select top(1000) n.ID, n.chapter, na.county as NA_county, left(n.zip,5) as ziptrim, z.ZIP, z.chapter, n.COUNTY as N_county, n.UPDATED_BY
+	from Name n
+	inner join Name_Address na on na.ADDRESS_NUM = n.MAIL_ADDRESS_NUM
+	inner join Zip_Code z on left(na.zip,5) = left(z.zip,5)
+	where n.CHAPTER = ''
+	and na.PREFERRED_MAIL = '1'
+	and len(na.ZIP) >= '5'
+	and na.COUNTRY = ''
+	order by n.id
+
+/* Jacob's query:
+SELECT
+  count(*)
+FROM
+  Name n
+  INNER JOIN Name_Address a ON a.ID = n.ID AND a.PREFERRED_MAIL = 1
+  INNER JOIN Zip_Code z ON LEFT(z.ZIP,5) = LEFT(a.ZIP,5)
+WHERE
+  n.CHAPTER = ''
+  AND a.COUNTRY = ''
+  AND LEN(a.ZIP) >= '5'
+/*23005*/
+*/
+/*= 11609 (2/24/14-2:07)*/
+
+
+/*
+	/* THE DESTRUCTIVE QUERY: */
+	update /*top(100)*/ n
+	set n.chapter = z.chapter,
+		na.county = z.county,
+		n.county = z.county
+	from Name n
+	inner join Name_Address na on na.ADDRESS_NUM = n.MAIL_ADDRESS_NUM
+	inner join Zip_Code z on left(na.zip,5) = left(z.zip,5)
+	where n.CHAPTER = ''
+	and na.PREFERRED_MAIL = '1'
+	and len(na.ZIP) >= '5'
+	and na.COUNTRY = ''
+*/
