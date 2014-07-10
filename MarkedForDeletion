@@ -1,0 +1,121 @@
+/*# records in iMIS-Name marked for Deletion (Status = 'C1')
+*/
+select distinct n.ID/*, a.ACTIVITY_TYPE, a.DESCRIPTION, a.PRODUCT_CODE, a.EFFECTIVE_DATE*/
+from Name n
+/*inner join Activity a on n.ID = a.ID*/
+where n.STATUS = 'C1'
+/*and a.AMOUNT = '0.00'*/
+
+
+/*# records in iMIS-Name marked for Deletion (Status = 'C1')
+	-with activity in Activity table
+*/
+select distinct n.ID/*, a.ACTIVITY_TYPE, a.DESCRIPTION, a.PRODUCT_CODE, a.EFFECTIVE_DATE*/
+from Name n
+inner join Activity a on n.ID = a.ID
+where n.STATUS = 'C1'
+/*and a.AMOUNT = '0.00'*/
+
+
+/*# records in iMIS-Name marked for Deletion (Status = 'C1')
+	-with money in Activity table
+*/
+select distinct n.ID/*, a.ACTIVITY_TYPE, a.DESCRIPTION, a.PRODUCT_CODE, a.EFFECTIVE_DATE*/
+from Name n
+inner join Activity a on n.ID = a.ID
+where n.STATUS = 'C1'
+and a.AMOUNT <> '0.00'
+
+
+/*# records in iMIS-Name marked for Deletion (Status = 'C1')
+	-with no money in Activity table
+*/
+select distinct n.ID/*, a.ACTIVITY_TYPE, a.DESCRIPTION, a.PRODUCT_CODE, a.EFFECTIVE_DATE*/
+from Name n
+inner join Activity a on n.ID = a.ID
+where n.STATUS = 'C1'
+and a.AMOUNT = '0.00'
+
+
+/*# records in iMIS-Name marked for Deletion (Status = 'C1')
+	-with at least 1 record and with money in Activity table
+*/
+select n.ID, a.ACTIVITY_TYPE, a.DESCRIPTION, a.PRODUCT_CODE, a.EFFECTIVE_DATE
+from Name n
+inner join Activity a on n.ID = a.ID
+where n.STATUS = 'C1'
+and a.AMOUNT <> '0.00'
+group by n.ID, a.ACTIVITY_TYPE, a.DESCRIPTION, a.PRODUCT_CODE, a.EFFECTIVE_DATE
+
+
+/*# records in iMIS-Name marked for Deletion (Status = 'C1')
+	-with at least 1 record but no money in Activity table
+*/
+select n.ID, a.ACTIVITY_TYPE, a.DESCRIPTION, a.PRODUCT_CODE, a.EFFECTIVE_DATE
+from Name n
+inner join Activity a on n.ID = a.ID
+where n.STATUS = 'C1'
+and a.AMOUNT = '0.00'
+group by n.ID, a.ACTIVITY_TYPE, a.DESCRIPTION, a.PRODUCT_CODE, a.EFFECTIVE_DATE
+
+
+
+/*# records in iMIS-Name marked for Deletion (Status = 'D')
+*/
+select distinct n.ID/*, a.ACTIVITY_TYPE, a.DESCRIPTION, a.PRODUCT_CODE, a.EFFECTIVE_DATE*/
+from Name n
+/*inner join Activity a on n.ID = a.ID*/
+where n.STATUS = 'D'
+/*and a.AMOUNT = '0.00'*/
+
+
+/*# records in iMIS-Name marked for Deletion (Status = 'D')
+	-with activity in Activity table
+*/
+select distinct n.ID/*, a.ACTIVITY_TYPE, a.DESCRIPTION, a.PRODUCT_CODE, a.EFFECTIVE_DATE*/
+from Name n
+inner join Activity a on n.ID = a.ID
+where n.STATUS = 'D'
+/*and a.AMOUNT = '0.00'*/
+
+
+/*# records in iMIS-Name marked for Deletion (Status = 'D')
+	-with money in Activity table
+*/
+select distinct n.ID/*, a.ACTIVITY_TYPE, a.DESCRIPTION, a.PRODUCT_CODE, a.EFFECTIVE_DATE*/
+from Name n
+inner join Activity a on n.ID = a.ID
+where n.STATUS = 'D'
+and a.AMOUNT <> '0.00'
+
+
+/*# records in iMIS-Name marked for Deletion (Status = 'D')
+	-with no money in Activity table
+*/
+select distinct n.ID/*, a.ACTIVITY_TYPE, a.DESCRIPTION, a.PRODUCT_CODE, a.EFFECTIVE_DATE*/
+from Name n
+inner join Activity a on n.ID = a.ID
+where n.STATUS = 'D'
+and a.AMOUNT = '0.00'
+
+
+/*# records in iMIS-Name marked for Deletion (Status = 'D')
+	-with at least 1 record and with money in Activity table
+*/
+select n.ID, a.ACTIVITY_TYPE, a.DESCRIPTION, a.PRODUCT_CODE, a.EFFECTIVE_DATE
+from Name n
+inner join Activity a on n.ID = a.ID
+where n.STATUS = 'D'
+and a.AMOUNT <> '0.00'
+group by n.ID, a.ACTIVITY_TYPE, a.DESCRIPTION, a.PRODUCT_CODE, a.EFFECTIVE_DATE
+
+
+/*# records in iMIS-Name marked for Deletion (Status = 'D')
+	-with at least 1 record but no money in Activity table
+*/
+select n.ID, a.ACTIVITY_TYPE, a.DESCRIPTION, a.PRODUCT_CODE, a.EFFECTIVE_DATE
+from Name n
+inner join Activity a on n.ID = a.ID
+where n.STATUS = 'D'
+and a.AMOUNT = '0.00'
+group by n.ID, a.ACTIVITY_TYPE, a.DESCRIPTION, a.PRODUCT_CODE, a.EFFECTIVE_DATE
