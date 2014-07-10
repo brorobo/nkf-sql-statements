@@ -1,0 +1,16 @@
+select n.ID
+, cp.PRIMARY_EMAIL
+, c.NO_EMAIL
+, cp.ACCEPTS_EMAIL
+, c.NO_MAIL
+, cp.ACCEPTS_POSTAL_MAIL
+, n.STATUS
+, n.MEMBER_TYPE
+from ConvioProfiles cp
+inner join Name n on n.ID = cp.MEMBER_ID
+inner join Communications c on n.ID = c.ID
+where cp.MEMBER_ID <> ''
+and cp.PRIMARY_EMAIL <> ''
+and c.NO_EMAIL <> cp.ACCEPTS_EMAIL
+order by n.ID
+
