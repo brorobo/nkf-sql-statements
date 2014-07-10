@@ -1,0 +1,22 @@
+select *
+from Name
+where MEMBER_TYPE = 'staff'
+and STATUS = 'A'
+
+
+select *
+from Name
+where MEMBER_TYPE = 'staff'
+and STATUS <> 'A'
+
+
+select *
+from Name
+where MEMBER_TYPE = 'NKF'
+and STATUS = 'A'
+order by COMPANY
+
+select *
+from Name
+where MEMBER_TYPE = 'NKF'
+and STATUS <> 'A'
