@@ -1,0 +1,57 @@
+/*RUNNING THE SCRIPTS ON THIS PAGE CLEARS THE FORMS FROM THE 
+PREVIOUS YEAR THAT NEED TO BE CLEARED.
+*/
+update   facultyFrm2_login
+set  session1 = 0,
+	Chairsession1 = null,
+	session2 = null,
+	Chairsession2 = null,
+	session3 = null,
+	Chairsession3 = null,
+	session4 = null,
+	Chairsession4 = null,
+	session5 = null,
+	Chairsession5 = null,
+	session6 = null,
+	Chairsession6 = null,
+	session7 = null,
+	Chairsession7 = null,
+	session8 = null,
+	Chairsession8 = null
+where FacultyFrm_ID <> 23
+/*23 is Brian Robilotta's ID*/
+
+update   facultyFrm2_agree
+set  signagree = null,
+	dateAgreeSubmitted = null,
+	dateAgreeUpdated = null,
+	dateAgreePrinted = null
+where FacultyFrm_ID <> 23
+/*23 is Brian Robilotta's ID*/
+
+delete 
+from facultyFrm2_av
+where facultyFrm_id <> 23
+/*23 is Brian Robilotta's ID*/
+
+delete 
+from facultyFrm2_ed
+where facultyFrm_id <> 23
+/*23 is Brian Robilotta's ID*/
+
+delete 
+from facultyFrm2_housing
+where facultyFrm_id <> 23
+/*23 is Brian Robilotta's ID*/
+
+/* DO NOT CLEAR - PEOPLE CAN REUSE PREVIOUS IF THEY WANT
+delete 
+from facultyFrm2_intro
+where facultyFrm_id <> 23
+/*23 is Brian Robilotta's ID*/
+*/
+
+delete 
+from facultyFrm2_slides
+where facultyFrm_id <> 23
+/*23 is Brian Robilotta's ID*/
