@@ -1,82 +1,57 @@
-/*
-	/*FIND ALL RECORDS IN NAME WITHOUT A CHAPTER: */
-	select chapter, ZIP
-	from Name
-	where Zip <> ''
-	and COUNTRY = ''
-	and CHAPTER = ''
-/* may need to add more delimiters to narrow down fields for finding records where zip is not correctly entered:
-	and LEN(ZIP) < 5 
+/*PROCESS FOR UPDATING EMPTY CHAPTER CODES IN THE NAME TABLE:
+1.	CREATE A TEMP TABLE
+2.	INSERT RECORDS TO BE AFFECTED INTO TEMP TABLE
+3.	UPDATE CHANGE LOG IN Name_Log TO SHOW THAT YOU HAVE UPDATED (ARE ABOUT TO UPDATE) THE RECORDS BASED ON THE IDs FROM THE TEMP TABLE
+4.	UPDATE THE Name TABLE, SETTING THE EMPTY CHAPTER CODE TO WHAT IT SHOULD BE ACCORDING TO THE Zip_Code TABLE, BASED ON THE IDs FROM THE TEMP TABLE
+5.	DROP THE TEMP TABLE
 */
-	order by ZIP
-/*=15678 (2/24/14)*/
-*/
+/* STEP 1 */
+CREATE TABLE _TEMP_CHAPTER_ZIP
+(id VARCHAR(255))
 
-/*
-/* trying to get only the true zip codes in the name table
-Msg 245, Level 16, State 1, Line 17
-Conversion failed when converting the varchar value 'K0C 1' to data type int.
-Msg 8114, Level 16, State 5, Line 17
-Error converting data type varchar to numeric.
-*/
-select
-cast(left(n.zip,5) as decimal)
-from name n
-where n.zip is not null
-and left(n.zip,5) * 1 = left(n.zip,5)
-and COUNTRY = ''
-*/
+/* STEP 2 */
+INSERT INTO _TEMP_CHAPTER_ZIP (id)
+	SELECT n.ID
+		from Name n
+		inner join Zip_Code z on left(n.zip,5) = left(z.zip,5)
+		where n.CHAPTER = ''
+		and n.Zip <> ''
+		and n.COUNTRY = ''
+		order by n.id desc
 
-/*
-/* trying to get only the true zip codes in the name table*/
-select n.Zip, N.COUNTRY
-from Name n
-where isnumeric(left(n.zip,5) ) = 1
-and n.zip is not null
-and left(n.zip,5) * 1 = left(n.zip,5)
-and COUNTRY = ''
-and ID <> '732745'
-*/
-
-
-	/* FIND THE NUMBER OF RECORDS TO BE AFFECTED: */
-	select top(1000) n.ID, n.chapter, na.county as NA_county, left(n.zip,5) as ziptrim, z.ZIP, z.chapter, n.COUNTY as N_county, n.UPDATED_BY
-	from Name n
-	inner join Name_Address na on na.ADDRESS_NUM = n.MAIL_ADDRESS_NUM
-	inner join Zip_Code z on left(na.zip,5) = left(z.zip,5)
+/* STEP 3 */
+INSERT INTO Name_Log (
+	date_time
+	, log_type
+	, sub_type
+	, USER_ID
+	, ID
+	, LOG_TEXT )
+SELECT 
+	getdate() AS Expr1
+	, 'CHANGE' AS Expr2
+	, 'CHANGE' AS Expr3
+	, 'SQL_AddChapterCode' AS Expr4
+	, n.ID
+	, 'Chapter Added, was empty' AS Expr5
+FROM Name n
+	inner join Zip_Code z on left(n.zip,5) = left(z.zip,5)
+	INNER JOIN _TEMP_CHAPTER_ZIP t ON t.id = n.ID
 	where n.CHAPTER = ''
-	and na.PREFERRED_MAIL = '1'
-	and len(na.ZIP) >= '5'
-	and na.COUNTRY = ''
-	order by n.id
+	and n.Zip <> ''
+	and n.COUNTRY = ''
 
-/* Jacob's query:
-SELECT
-  count(*)
-FROM
-  Name n
-  INNER JOIN Name_Address a ON a.ID = n.ID AND a.PREFERRED_MAIL = 1
-  INNER JOIN Zip_Code z ON LEFT(z.ZIP,5) = LEFT(a.ZIP,5)
-WHERE
-  n.CHAPTER = ''
-  AND a.COUNTRY = ''
-  AND LEN(a.ZIP) >= '5'
-/*23005*/
-*/
-/*= 11609 (2/24/14-2:07)*/
-
-
-/*
+/* STEP 4 */
 	/* THE DESTRUCTIVE QUERY: */
-	update /*top(100)*/ n
-	set n.chapter = z.chapter,
-		na.county = z.county,
-		n.county = z.county
+	update n
+	set n.chapter = z.chapter
 	from Name n
-	inner join Name_Address na on na.ADDRESS_NUM = n.MAIL_ADDRESS_NUM
-	inner join Zip_Code z on left(na.zip,5) = left(z.zip,5)
+	inner join Zip_Code z on left(n.zip,5) = left(z.zip,5)
+	INNER JOIN _TEMP_CHAPTER_ZIP t ON t.id = n.ID
 	where n.CHAPTER = ''
-	and na.PREFERRED_MAIL = '1'
-	and len(na.ZIP) >= '5'
-	and na.COUNTRY = ''
-*/
+	and n.Zip <> ''
+	and n.COUNTRY = ''
+
+/* STEP 5 */
+DROP TABLE _TEMP_CHAPTER_ZIP
+
