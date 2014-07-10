@@ -1,0 +1,42 @@
+/*
+/*this query pulls all records in test_iMIS where their assigned chapter code
+does not coincide with their expected chapter code from the zip_code table:*/
+select distinct(name.ID), Name.CHAPTER as nChapter, Zip_Code.CHAPTER as zChapter, Name.ZIP as nZip,
+	Zip_Code.ZIP as zZip
+from Name
+inner join Zip_Code on name.zip = Zip_Code.ZIP
+where 1 = 1
+and Zip_Code.CHAPTER <> name.CHAPTER
+order by Name.CHAPTER desc
+/*= 10348 (2/24/14)*/
+*/
+
+/*
+/* total number of unique IDs in test_imis*/
+select distinct(name.ID)
+from Name
+inner join Zip_Code on name.CHAPTER = Zip_Code.CHAPTER
+/*= 848190 (2/24/14)*/
+*/
+
+/*
+/*this query pulls the count of people in test_iMIS who don't have a chapter code assigned to them:*/
+select ID from Name
+where CHAPTER = ''
+/*=24921 (2/24/14)*/
+*/
+
+/*
+/*total number of records in test_iMIS:*/
+select ID
+from Name
+/*=799088 (12/5)*/
+*/
+
+/*
+/*this query lists those that have a chapter code outside of the official ones we have listed*/
+select ID, CHAPTER, CITY, STATE_PROVINCE from Name
+where CHAPTER not in('102','105','107','109','110','112','113','203','204','205','206','208','209','210','211','212','303','305','306','308','310','311','313','406','503','504','505')
+and CHAPTER <> ''
+order by CHAPTER, STATE_PROVINCE, CITY
+*/
