@@ -1,0 +1,16 @@
+/* This query can be used to help clean up the country field */
+select ID
+, MEMBER_TYPE
+, STATUS
+, LAST_FIRST
+, COMPANY
+, LAST_UPDATED
+, UPDATED_BY
+from Name
+where COUNTRY in ('U.S.A.','United States')
+
+select Country, count(COUNTRY)
+from Name
+where COUNTRY <> ''
+group by COUNTRY
+order by COUNTRY
