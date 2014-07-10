@@ -1,0 +1,75 @@
+/*PROCESS FOR UPDATING EMPTY CHAPTER CODES IN THE NAME TABLE:
+(This query should be run for UPDATING chapter codes that do not match with the zip code in the Zip_Code table)
+1.	CREATE A PERMANENT TABLE
+2.	INSERT RECORDS TO BE AFFECTED INTO PERMANENT TABLE AND ANY OTHER INFORMATION DESIRED
+3.	UPDATE CHANGE LOG IN Name_Log TO SHOW THAT YOU HAVE UPDATED (ARE ABOUT TO UPDATE) THE RECORDS BASED ON THE IDs FROM THE PERMANENT TABLE
+4.	UPDATE THE Name TABLE, SETTING THE EMPTY CHAPTER CODE TO WHAT IT SHOULD BE ACCORDING TO THE Zip_Code TABLE, BASED ON THE IDs FROM THE PERMANENT TABLE
+*/
+/* STEP 1 */
+
+if not exists (SELECT * FROM SysObjects WHERE Name = '_NKF_PERMANENT_CHAPTER_ZIP')
+	CREATE TABLE _NKF_PERMANENT_CHAPTER_ZIP
+	(
+	id VARCHAR(255),
+	PREVIOUS_CHAPTER VARCHAR(255),
+	UPDATED_DATE DATETIME
+	)
+go
+
+/* STEP 2 */
+INSERT INTO _NKF_PERMANENT_CHAPTER_ZIP (
+	id
+	,PREVIOUS_CHAPTER)
+	select Name.ID, Name.CHAPTER as nChapter/*, Zip_Code.CHAPTER as zChapter, Name.ZIP as nZip,
+		Zip_Code.ZIP as zZip*/
+		from Name
+		inner join Zip_Code on name.zip = Zip_Code.ZIP
+		where 1 = 1
+		and Zip_Code.CHAPTER <> name.CHAPTER
+		order by Name.ID desc
+
+/* STEP 3 */
+INSERT INTO Name_Log (
+	date_time
+	, log_type
+	, sub_type
+	, USER_ID
+	, ID
+	, LOG_TEXT )
+SELECT 
+	getdate() AS Expr1
+	, 'CHANGE' AS Expr2
+	, 'CHANGE' AS Expr3
+	, 'SQL_UpdateChapterCode' AS Expr4
+	, Name.ID
+	, 'Chapter Updated, did not match' AS Expr5
+FROM Name
+	INNER JOIN Zip_Code ON left(Name.zip,5) = left(Zip_Code.zip,5)
+	INNER JOIN _NKF_PERMANENT_CHAPTER_ZIP ON _NKF_PERMANENT_CHAPTER_ZIP.id = Name.ID
+	WHERE 1 = 1
+	AND Zip_Code.CHAPTER <> name.CHAPTER
+
+/* STEP 4 */
+	/* THE DESTRUCTIVE QUERY: */
+UPDATE Name
+	SET Name.chapter = Zip_Code.chapter
+	FROM Name
+	INNER JOIN Zip_Code ON left(Name.zip,5) = left(Zip_Code.zip,5)
+	INNER JOIN _NKF_PERMANENT_CHAPTER_ZIP ON _NKF_PERMANENT_CHAPTER_ZIP.id = Name.ID
+	WHERE 1 = 1
+	AND Zip_Code.CHAPTER <> name.CHAPTER
+
+/* STEP 5 */
+	/* THE DESTRUCTIVE QUERY: */
+UPDATE _NKF_PERMANENT_CHAPTER_ZIP
+	SET _NKF_PERMANENT_CHAPTER_ZIP.UPDATED_DATE = getdate()
+/*
+	FROM _NKF_PERMANENT_CHAPTER_ZIP t
+	INNER JOIN Zip_Code z on left(Name.zip,5) = left(Zip_Code.zip,5)
+	INNER JOIN _NKF_PERMANENT_CHAPTER_ZIP t ON _NKF_PERMANENT_CHAPTER_ZIP.id = Name.ID
+*/
+	WHERE _NKF_PERMANENT_CHAPTER_ZIP.UPDATED_DATE is null
+
+/*
+DROP TABLE _NKF_PERMANENT_CHAPTER_ZIP
+*/
